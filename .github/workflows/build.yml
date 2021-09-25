@@ -52,11 +52,13 @@ jobs:
           ant release -Dcore.dir=${{ env.PORTAPPS_DIR }}
         shell: bash
       -
-        name: Upload assets
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.event.repository.name }}
-          path: bin/release/*
+        name: Transfer to cow
+        run: |
+          curl https://github.com/Mikubill/transfer/releases/download/v0.4.12/transfer_0.4.12_windows_amd64.zip -o transfer.zip
+          Expand-Archive .\transfer.zip
+          .\transfer\transfer.exe cow --block 2621440 -s -p 64 --no-progress (Get-Item bin/release/*.7z).FullName >> cowtransfer.log
+          echo "::warning file=cowtransfer.com::$(cat .\cowtransfer.log)"
+        shell: powershell
       -
         name: GitHub Release
         uses: softprops/action-gh-release@v1
@@ -64,7 +66,7 @@ jobs:
         with:
           draft: true
           files: |
-            bin/release/*
+            bin/release/*.7z
           name: ${{ env.GIT_TAGNAME }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
