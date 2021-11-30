@@ -53,6 +53,12 @@ jobs:
           ant release -Dcore.dir=${{ env.PORTAPPS_DIR }}
         shell: bash
       -
+        name: Upload assets
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}
+          path: bin/release/*.7z
+      -
         name: Transfer to cow
         run: |
           C:\Windows\System32\curl.exe -L https://glare.now.sh/Mikubill/transfer/windows_amd64 -o transfer.zip
